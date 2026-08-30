@@ -525,6 +525,18 @@ const OTT_PROVIDERS = [
     },
 
     {
+        id: "prime",
+        ko: "Prime Video",
+        en: "Prime Video",
+    },
+
+    {
+        id: "apple",
+        ko: "Apple TV+",
+        en: "Apple TV+",
+    },
+
+    {
         id: "wavve",
         ko: "Wavve",
         en: "Wavve",
@@ -699,6 +711,12 @@ const REGIONS = [
         id: "korea",
         ko: "한국",
         en: "Korea",
+    },
+
+    {
+        id: "japan",
+        ko: "일본",
+        en: "Japan",
     },
 
     {

@@ -2,13 +2,11 @@
    볼만한픽 / Pick to Watch
    Cloudflare Pages Function
 
-   URL:
+   Endpoint:
    /api/recommend
 
    Cloudflare Secret:
    TMDB_TOKEN
-
-   자주 수정할 설정값은 파일 위쪽에 모아두었습니다.
 ========================================================= */
 
 
@@ -22,118 +20,158 @@ const TMDB_BASE_URL =
 
 const CONFIG = {
 
-    watchRegion: "KR",
+    /*
+       OTT 정보는 대한민국 기준
+    */
+    watchRegion:
+        "KR",
 
-    /* 평가 Top */
-    topRatedCount: 5,
+    topRatedCount:
+        5,
 
-    /* 최신 작품 */
-    recentCount: 5,
+    recentCount:
+        5,
 
-    /* 행운 후보풀 */
-    luckyPoolSize: 20,
+    luckyPoolSize:
+        20,
 
-    /* 최소 추천 목표 */
-    minimumRecommendationCount: 13,
+    minimumRecommendationCount:
+        13,
 
-    /* Bayesian 보정 */
-    bayesianM: 200,
+    bayesianM:
+        200,
 
     /*
-       첫 검색에서 가져올 최대 페이지 수.
-
-       평점순 + 최신순 각각 이만큼 조회합니다.
+       일반 추천:
+       평점순 + 최신순 각각 최대 3페이지
     */
-    discoverPages: 3,
-
-    /*
-       시리즈 에피소드 수 필터를 사용했을 때만
-       후보를 조금 더 넓게 찾습니다.
-    */
-    seriesRefineDiscoverPages: 4,
+    discoverPages:
+        3,
 
     /*
-       시리즈 에피소드 수 확인을 위해
-       상세조회할 작품의 최대 개수.
+       시리즈 에피소드 수 2차 필터에서는
+       조금 더 넓게 탐색
     */
-    seriesDetailLimit: 40,
+    seriesRefineDiscoverPages:
+        4,
 
     /*
-       TMDB 상세/OTT 조회 동시 요청 개수.
-       너무 공격적으로 병렬 요청하지 않도록 제한합니다.
+       시리즈 상세조회 최대 수
     */
-    parallelRequestLimit: 8,
+    seriesDetailLimit:
+        40,
+
+    /*
+       동시에 상세 요청할 최대 개수
+    */
+    parallelRequestLimit:
+        8,
 
 };
 
 
 /* =========================================================
    2. 품질 기준
-   점수 정책을 바꾸고 싶으면 여기만 수정
+
+   이 부분을 수정하면 추천 품질 기준을 쉽게 바꿀 수 있음
 ========================================================= */
 
 const QUALITY_LEVELS = [
 
     {
-        id: "base",
+        id:
+            "base",
 
-        minVoteCount: 100,
-        minRating: 6.5,
+        minVoteCount:
+            100,
+
+        minRating:
+            6.5,
     },
 
     {
-        id: "fallback",
+        id:
+            "fallback",
 
-        minVoteCount: 50,
-        minRating: 6.0,
+        minVoteCount:
+            50,
+
+        minRating:
+            6.0,
     },
 
 ];
 
 
 /* =========================================================
-   3. OTT 이름
-   프론트의 OTT id와 반드시 맞춰주세요.
+   3. 지원 OTT
 
-   TMDB provider ID를 하드코딩하지 않고
-   현재 한국 provider 목록에서 이름으로 찾습니다.
+   app.js의 OTT id와 반드시 맞아야 함.
+
+   aliases는 TMDB Provider 목록에서
+   실제 provider ID를 찾기 위한 이름 후보.
+
+   "Amazon Video"는 구매/대여 서비스이므로
+   Prime Video alias에 넣지 않음.
+
+   Apple TV Store도 Apple TV+와 별개이므로 제외.
 ========================================================= */
 
-const OTT_ALIASES = {
+const SUPPORTED_OTT = {
 
-    netflix: [
-        "Netflix",
-    ],
+    netflix: {
+        aliases: [
+            "Netflix",
+        ],
+    },
 
-    disney: [
-        "Disney Plus",
-        "Disney+",
-    ],
+    disney: {
+        aliases: [
+            "Disney Plus",
+            "Disney+",
+        ],
+    },
 
-    wavve: [
-        "wavve",
-        "Wavve",
-    ],
+    prime: {
+        aliases: [
+            "Amazon Prime Video",
+            "Prime Video",
+        ],
+    },
 
-    tving: [
-        "TVING",
-    ],
+    apple: {
+        aliases: [
+            "Apple TV Plus",
+            "Apple TV+",
+        ],
+    },
 
-    watcha: [
-        "Watcha",
-        "WATCHA",
-    ],
+    wavve: {
+        aliases: [
+            "wavve",
+            "Wavve",
+        ],
+    },
+
+    tving: {
+        aliases: [
+            "TVING",
+            "Tving",
+        ],
+    },
+
+    watcha: {
+        aliases: [
+            "Watcha",
+            "WATCHA",
+        ],
+    },
 
 };
 
 
 /* =========================================================
-   4. 영화 장르 매핑
-
-   key는 app.js의 MOVIE_GENRES id와 맞춰야 합니다.
-
-   UI 장르는 단순하게 유지하고,
-   내부에서는 TMDB 장르를 넓게 묶습니다.
+   4. 영화 장르 그룹
 ========================================================= */
 
 const MOVIE_GENRE_GROUPS = {
@@ -146,19 +184,19 @@ const MOVIE_GENRE_GROUPS = {
     ],
 
     comedy: [
-        35,     // Comedy
+        35,
     ],
 
     crime: [
-        80,     // Crime
+        80,
     ],
 
     thriller: [
-        53,     // Thriller
+        53,
     ],
 
     mystery: [
-        9648,   // Mystery
+        9648,
     ],
 
     sf_fantasy: [
@@ -167,88 +205,89 @@ const MOVIE_GENRE_GROUPS = {
     ],
 
     romance: [
-        10749,  // Romance
+        10749,
     ],
 
     drama: [
-        18,     // Drama
+        18,
         36,     // History
         10752,  // War
         37,     // Western
     ],
 
     horror: [
-        27,     // Horror
+        27,
     ],
 
     animation: [
-        16,     // Animation
+        16,
         10751,  // Family
     ],
 
     documentary: [
-        99,     // Documentary
+        99,
     ],
 
 };
 
 
 /* =========================================================
-   5. 시리즈 장르 매핑
-
-   News / Talk는 추천 대상에서 제외합니다.
+   5. 시리즈 장르 그룹
 ========================================================= */
 
 const SERIES_GENRE_GROUPS = {
 
     action_adventure: [
-        10759,  // Action & Adventure
+        10759,
         10768,  // War & Politics
         37,     // Western
     ],
 
     comedy: [
-        35,     // Comedy
+        35,
     ],
 
     crime: [
-        80,     // Crime
+        80,
     ],
 
     mystery: [
-        9648,   // Mystery
+        9648,
     ],
 
     sf_fantasy: [
-        10765,  // Sci-Fi & Fantasy
+        10765,
     ],
 
     drama: [
-        18,     // Drama
+        18,
         10766,  // Soap
         10768,  // War & Politics
     ],
 
     animation: [
-        16,     // Animation
+        16,
     ],
 
     documentary: [
-        99,     // Documentary
+        99,
     ],
 
     reality: [
-        10764,  // Reality
+        10764,
     ],
 
     family_kids: [
-        10751,  // Family
-        10762,  // Kids
+        10751,
+        10762,
     ],
 
 };
 
 
+/*
+   News / Talk는 추천에서 제외
+*/
 const SERIES_ALWAYS_EXCLUDED_GENRES = [
 
     10763,  // News
@@ -258,10 +297,7 @@ const SERIES_ALWAYS_EXCLUDED_GENRES = [
 
 
 /* =========================================================
-   6. 제작지역 매핑
-
-   "그 외"는 TMDB 국가 목록을 받아
-   아래 네 지역에 포함되지 않은 국가를 자동 계산합니다.
+   6. 제작지역
 ========================================================= */
 
 const REGION_GROUPS = {
@@ -270,63 +306,53 @@ const REGION_GROUPS = {
         "KR",
     ],
 
+    japan: [
+        "JP",
+    ],
+
     north_america: [
         "US",
         "CA",
     ],
 
     europe: [
-
         "GB",
         "FR",
         "DE",
         "ES",
         "IT",
-
         "NL",
         "BE",
         "SE",
         "NO",
         "DK",
-
         "FI",
         "PL",
         "AT",
         "CH",
         "IE",
-
         "PT",
         "CZ",
         "HU",
         "GR",
         "RO",
-
         "BG",
         "HR",
         "SI",
         "SK",
         "EE",
-
         "LV",
         "LT",
         "IS",
         "LU",
         "RS",
-
         "BA",
         "ME",
         "MK",
         "AL",
     ],
 
-    /*
-       한국은 별도이므로 제외.
-       일본은 기타 아시아에 포함.
-    */
     other_asia: [
-
-        "JP",
-
         "CN",
         "HK",
         "TW",
@@ -355,9 +381,9 @@ const REGION_GROUPS = {
 
 /* =========================================================
    7. 메모리 캐시
-   Cloudflare 인스턴스가 살아 있는 동안만 유지됩니다.
 
-   DB나 KV를 사용하는 캐시는 아닙니다.
+   Cloudflare Worker 인스턴스가 살아 있는 동안만 유지.
+   DB/KV를 사용하는 영구 캐시가 아님.
 ========================================================= */
 
 let countryCodesCache =
@@ -365,13 +391,18 @@ let countryCodesCache =
 
 
 const providerIndexCache = {
-    movie: null,
-    series: null,
+
+    movie:
+        null,
+
+    series:
+        null,
+
 };
 
 
 /* =========================================================
-   8. 공통 응답
+   8. JSON 응답
 ========================================================= */
 
 function jsonResponse(
@@ -387,8 +418,10 @@ function jsonResponse(
             status,
 
             headers: {
+
                 "Content-Type":
                     "application/json; charset=utf-8",
+
             },
         }
     );
@@ -444,24 +477,28 @@ async function tmdbGet(
             url,
             {
                 headers: {
+
                     Authorization:
                         `Bearer ${token}`,
 
                     Accept:
                         "application/json",
+
                 },
             }
         );
 
 
-    if (!response.ok) {
+    if (
+        !response.ok
+    ) {
 
-        const text =
+        const errorText =
             await response.text();
 
 
         throw new Error(
-            `TMDB ${response.status}: ${text}`
+            `TMDB ${response.status}: ${errorText}`
         );
     }
 
@@ -478,9 +515,9 @@ function getTmdbLanguage(
     language
 ) {
 
-    return language === "ko"
-        ? "ko-KR"
-        : "en-US";
+    return language === "en"
+        ? "en-US"
+        : "ko-KR";
 }
 
 
@@ -523,14 +560,17 @@ function subtractYears(
 
 
 /* =========================================================
-   12. 국가
+   12. 제작지역 코드
 ========================================================= */
 
 async function getAllCountryCodes(
     token
 ) {
 
-    if (countryCodesCache) {
+    if (
+        countryCodesCache
+    ) {
+
         return countryCodesCache;
     }
 
@@ -570,7 +610,7 @@ async function resolveRegionCodes(
         new Set();
 
 
-    const normalRegionCodes =
+    const mappedCodes =
         new Set(
             Object
                 .values(
@@ -585,9 +625,11 @@ async function resolveRegionCodes(
         of selectedRegions
     ) {
 
+        /*
+           "그 외"가 아닌 일반 지역
+        */
         if (
-            regionId !==
-            "other"
+            regionId !== "other"
         ) {
 
             const codes =
@@ -608,6 +650,12 @@ async function resolveRegionCodes(
         }
 
 
+        /*
+           "그 외"
+
+           이미 한국/북미/유럽/기타아시아로
+           분류된 국가를 제외한 모든 국가
+        */
         const allCountries =
             await getAllCountryCodes(
                 token
@@ -617,7 +665,7 @@ async function resolveRegionCodes(
         allCountries
             .filter(
                 code =>
-                    !normalRegionCodes.has(
+                    !mappedCodes.has(
                         code
                     )
             )
@@ -637,21 +685,25 @@ async function resolveRegionCodes(
 
 
 /* =========================================================
-   13. OTT Provider ID 자동 확인
+   13. OTT Provider
 ========================================================= */
 
 function normalizeProviderName(
-    name
+    value
 ) {
 
     return String(
-        name || ""
+        value || ""
     )
         .trim()
         .toLowerCase();
 }
 
 
+/*
+   대한민국 기준 provider 목록을 한 번 가져와
+   이름 -> provider ID Map 생성
+*/
 async function getProviderIndex(
     token,
     mediaType
@@ -698,12 +750,21 @@ async function getProviderIndex(
         of data.results || []
     ) {
 
-        index.set(
+        const name =
             normalizeProviderName(
                 provider.provider_name
-            ),
-            provider.provider_id
-        );
+            );
+
+
+        if (
+            name
+        ) {
+
+            index.set(
+                name,
+                provider.provider_id
+            );
+        }
     }
 
 
@@ -717,84 +778,117 @@ async function getProviderIndex(
 }
 
 
-async function resolveOttProviderIds(
+/*
+   하나의 OTT id를 실제 TMDB provider ID로 변환
+*/
+async function resolveSingleOttProviderId(
     token,
     mediaType,
-    selectedOtt
+    ottId
 ) {
 
+    const definition =
+        SUPPORTED_OTT[
+        ottId
+        ];
+
+
     if (
-        !selectedOtt.length ||
-        selectedOtt.includes(
-            "all"
-        )
+        !definition
     ) {
 
-        return [];
+        throw new Error(
+            `알 수 없는 OTT입니다: ${ottId}`
+        );
     }
 
 
-    const providerIndex =
+    const index =
         await getProviderIndex(
             token,
             mediaType
         );
 
 
-    const ids =
-        [];
-
-
     for (
-        const ottId
-        of selectedOtt
+        const alias
+        of definition.aliases
     ) {
 
-        const aliases =
-            OTT_ALIASES[
-            ottId
-            ] || [];
+        const providerId =
+            index.get(
+                normalizeProviderName(
+                    alias
+                )
+            );
 
 
-        let providerId =
-            null;
-
-
-        for (
-            const alias
-            of aliases
+        if (
+            providerId
         ) {
 
-            const found =
-                providerIndex.get(
-                    normalizeProviderName(
-                        alias
-                    )
-                );
-
-
-            if (found) {
-
-                providerId =
-                    found;
-
-                break;
-            }
+            return providerId;
         }
-
-
-        if (!providerId) {
-
-            throw new Error(
-                `TMDB에서 OTT provider를 찾지 못했습니다: ${ottId}`
-            );
-        }
-
-
-        ids.push(
-            providerId
-        );
     }
+
+
+    throw new Error(
+        `TMDB 대한민국 provider 목록에서 ${ottId}를 찾지 못했습니다.`
+    );
+}
+
+
+/*
+   실제 Discover에 사용할 provider ID 목록 생성
+
+   중요:
+   - "전체"도 provider 필터를 제거하지 않음.
+   - 지원하는 7개 OTT 전체를 OR 조건으로 넣음.
+   - 따라서 어떤 지원 OTT에도 없는 작품은 후보가 되지 않음.
+*/
+async function resolveOttProviderIds(
+    token,
+    mediaType,
+    selectedOtt
+) {
+
+    let requestedOttIds;
+
+
+    if (
+        !Array.isArray(
+            selectedOtt
+        ) ||
+        selectedOtt.length === 0 ||
+        selectedOtt.includes(
+            "all"
+        )
+    ) {
+
+        requestedOttIds =
+            Object.keys(
+                SUPPORTED_OTT
+            );
+
+    } else {
+
+        requestedOttIds =
+            selectedOtt;
+    }
+
+
+    const ids =
+        await Promise.all(
+            requestedOttIds
+                .map(
+                    ottId =>
+                        resolveSingleOttProviderId(
+                            token,
+                            mediaType,
+                            ottId
+                        )
+                )
+        );
 
 
     return [
@@ -819,6 +913,10 @@ function getGenreGroups(
 }
 
 
+/*
+   선택한 UI 장르를
+   원본 TMDB 장르 ID 목록으로 넓게 변환
+*/
 function getSelectedRawGenreIds(
     mediaType,
     selectedGenres
@@ -834,24 +932,24 @@ function getSelectedRawGenreIds(
         new Set();
 
 
-    selectedGenres
-        .forEach(
-            key => {
+    for (
+        const genreKey
+        of selectedGenres
+    ) {
 
-                const group =
-                    groups[
-                    key
-                    ] || [];
+        const group =
+            groups[
+            genreKey
+            ] || [];
 
 
-                group.forEach(
-                    id =>
-                        ids.add(
-                            id
-                        )
-                );
-            }
+        group.forEach(
+            id =>
+                ids.add(
+                    id
+                )
         );
+    }
 
 
     return [
@@ -860,6 +958,10 @@ function getSelectedRawGenreIds(
 }
 
 
+/*
+   Discover에서 넓게 가져온 뒤
+   UI 장르의 AND/OR 의미를 정확히 판정
+*/
 function itemMatchesSelectedGenres(
     item,
     mediaType,
@@ -873,23 +975,24 @@ function itemMatchesSelectedGenres(
         );
 
 
-    const itemGenreIds =
+    const itemGenres =
         new Set(
             item.genre_ids || []
         );
 
 
     /*
-       TV News / Talk는 항상 제외
+       시리즈 News / Talk 제외
     */
     if (
         mediaType === "series" &&
-        SERIES_ALWAYS_EXCLUDED_GENRES.some(
-            id =>
-                itemGenreIds.has(
-                    id
-                )
-        )
+        SERIES_ALWAYS_EXCLUDED_GENRES
+            .some(
+                genreId =>
+                    itemGenres.has(
+                        genreId
+                    )
+            )
     ) {
 
         return false;
@@ -897,14 +1000,14 @@ function itemMatchesSelectedGenres(
 
 
     /*
-       Documentary를 직접 선택하지 않았다면
-       다큐멘터리 작품은 다른 장르 검색에서도 제외.
+       다큐멘터리를 직접 고르지 않았다면
+       다른 장르에 걸린 다큐도 제외
     */
     if (
         !selectedGenres.includes(
             "documentary"
         ) &&
-        itemGenreIds.has(
+        itemGenres.has(
             99
         )
     ) {
@@ -916,17 +1019,17 @@ function itemMatchesSelectedGenres(
     const matches =
         selectedGenres
             .map(
-                key => {
+                genreKey => {
 
-                    const ids =
+                    const rawIds =
                         groups[
-                        key
+                        genreKey
                         ] || [];
 
 
-                    return ids.some(
+                    return rawIds.some(
                         id =>
-                            itemGenreIds.has(
+                            itemGenres.has(
                                 id
                             )
                     );
@@ -950,6 +1053,9 @@ function itemMatchesSelectedGenres(
 }
 
 
+/*
+   카드에 표시할 UI 장르 key 계산
+*/
 function getItemGenreKeys(
     item,
     mediaType
@@ -961,7 +1067,7 @@ function getItemGenreKeys(
         );
 
 
-    const itemGenreIds =
+    const itemGenres =
         new Set(
             item.genre_ids || []
         );
@@ -974,11 +1080,11 @@ function getItemGenreKeys(
         .filter(
             ([
                 ,
-                ids,
+                rawIds,
             ]) =>
-                ids.some(
+                rawIds.some(
                     id =>
-                        itemGenreIds.has(
+                        itemGenres.has(
                             id
                         )
                 )
@@ -1004,18 +1110,6 @@ async function buildDiscoverParams(
     page
 ) {
 
-    const {
-        mediaType,
-        language,
-        selectedOtt,
-        selectedGenres,
-        selectedRegions,
-        selectedYear,
-        maxRuntime,
-    } =
-        requestData;
-
-
     const today =
         new Date();
 
@@ -1024,7 +1118,7 @@ async function buildDiscoverParams(
 
         language:
             getTmdbLanguage(
-                language
+                requestData.language
             ),
 
         page,
@@ -1041,16 +1135,29 @@ async function buildDiscoverParams(
         "vote_average.gte":
             quality.minRating,
 
+        /*
+           OTT는 모든 검색에서
+           대한민국 기준
+        */
         watch_region:
             CONFIG.watchRegion,
+
+        /*
+           지원 OTT는 구독형(flatrate)만
+        */
+        with_watch_monetization_types:
+            "flatrate",
+
     };
 
 
-    /*
+    /* -----------------------------------------------------
        미래 작품 제외
-    */
+    ----------------------------------------------------- */
+
     if (
-        mediaType === "movie"
+        requestData.mediaType ===
+        "movie"
     ) {
 
         params[
@@ -1071,17 +1178,18 @@ async function buildDiscoverParams(
     }
 
 
-    /*
-       최근 N년
-    */
+    /* -----------------------------------------------------
+       연도
+    ----------------------------------------------------- */
+
     if (
-        selectedYear !==
+        requestData.selectedYear !==
         "all"
     ) {
 
         const years =
             Number(
-                selectedYear
+                requestData.selectedYear
             );
 
 
@@ -1093,7 +1201,8 @@ async function buildDiscoverParams(
 
 
         if (
-            mediaType === "movie"
+            requestData.mediaType ===
+            "movie"
         ) {
 
             params[
@@ -1115,70 +1224,62 @@ async function buildDiscoverParams(
     }
 
 
-    /*
+    /* -----------------------------------------------------
        제작지역
-    */
-    const countryCodes =
+    ----------------------------------------------------- */
+
+    const regionCodes =
         await resolveRegionCodes(
             token,
-            selectedRegions
+            requestData.selectedRegions
         );
 
 
     if (
-        countryCodes.length
+        regionCodes.length
     ) {
 
         params.with_origin_country =
-            countryCodes.join(
+            regionCodes.join(
                 "|"
             );
     }
 
 
-    /*
+    /* -----------------------------------------------------
        OTT
 
-       여러 OTT = OR
-    */
+       매우 중요:
+       전체든 특정 OTT든 항상 provider ID 적용.
+
+       pipe(|) = OR
+    ----------------------------------------------------- */
+
     const providerIds =
         await resolveOttProviderIds(
             token,
-            mediaType,
-            selectedOtt
+            requestData.mediaType,
+            requestData.selectedOtt
         );
 
 
-    if (
-        providerIds.length
-    ) {
-
-        params.with_watch_providers =
-            providerIds.join(
-                "|"
-            );
+    params.with_watch_providers =
+        providerIds.join(
+            "|"
+        );
 
 
-        /*
-           렌트/구매가 아닌
-           구독형 스트리밍 기준
-        */
-        params.with_watch_monetization_types =
-            "flatrate";
-    }
+    /* -----------------------------------------------------
+       장르
 
+       Discover에서는 넓게 OR로 확보.
+       정확한 AND/OR는 수집 후 직접 판정.
+    ----------------------------------------------------- */
 
-    /*
-       UI 장르 그룹에 포함되는 원본 TMDB 장르들을
-       Discover 단계에서는 넓게 OR로 가져옵니다.
-
-       "모두 포함"의 정확한 판정은
-       가져온 뒤 우리가 직접 합니다.
-    */
     const rawGenreIds =
         getSelectedRawGenreIds(
-            mediaType,
-            selectedGenres
+            requestData.mediaType,
+            requestData.selectedGenres
         );
 
 
@@ -1193,17 +1294,19 @@ async function buildDiscoverParams(
     }
 
 
-    /*
-       Documentary 미선택 시 제외
-    */
+    /* -----------------------------------------------------
+       제외 장르
+    ----------------------------------------------------- */
+
     const excludedGenres =
         [];
 
 
     if (
-        !selectedGenres.includes(
-            "documentary"
-        )
+        !requestData.selectedGenres
+            .includes(
+                "documentary"
+            )
     ) {
 
         excludedGenres.push(
@@ -1213,7 +1316,8 @@ async function buildDiscoverParams(
 
 
     if (
-        mediaType === "series"
+        requestData.mediaType ===
+        "series"
     ) {
 
         excludedGenres.push(
@@ -1238,19 +1342,20 @@ async function buildDiscoverParams(
     }
 
 
-    /*
-       영화 2차 러닝타임 필터는
-       Discover에서 바로 처리 가능
-    */
+    /* -----------------------------------------------------
+       영화 러닝타임 2차 필터
+    ----------------------------------------------------- */
+
     if (
-        mediaType === "movie" &&
-        maxRuntime
+        requestData.mediaType ===
+        "movie" &&
+        requestData.maxRuntime
     ) {
 
         params[
             "with_runtime.lte"
         ] =
-            maxRuntime;
+            requestData.maxRuntime;
     }
 
 
@@ -1259,7 +1364,7 @@ async function buildDiscoverParams(
 
 
 /* =========================================================
-   16. Discover 여러 페이지 조회
+   16. Discover 페이지 조회
 ========================================================= */
 
 async function fetchDiscoverPages(
@@ -1287,7 +1392,7 @@ async function fetchDiscoverPages(
         );
 
 
-    const first =
+    const firstPage =
         await tmdbGet(
             token,
             endpoint,
@@ -1298,7 +1403,7 @@ async function fetchDiscoverPages(
     const results =
         [
             ...(
-                first.results ||
+                firstPage.results ||
                 []
             ),
         ];
@@ -1307,7 +1412,7 @@ async function fetchDiscoverPages(
     const totalPages =
         Math.min(
             Number(
-                first.total_pages ||
+                firstPage.total_pages ||
                 1
             ),
             maxPages
@@ -1352,23 +1457,24 @@ async function fetchDiscoverPages(
     }
 
 
-    const pages =
+    const remainingPages =
         await Promise.all(
             jobs
         );
 
 
-    pages.forEach(
-        data => {
+    for (
+        const pageData
+        of remainingPages
+    ) {
 
-            results.push(
-                ...(
-                    data.results ||
-                    []
-                )
-            );
-        }
-    );
+        results.push(
+            ...(
+                pageData.results ||
+                []
+            )
+        );
+    }
 
 
     return results;
@@ -1397,10 +1503,6 @@ async function collectCandidates(
             : CONFIG.discoverPages;
 
 
-    const scoreSort =
-        "vote_average.desc";
-
-
     const recentSort =
         requestData.mediaType ===
             "movie"
@@ -1418,7 +1520,7 @@ async function collectCandidates(
                 token,
                 requestData,
                 quality,
-                scoreSort,
+                "vote_average.desc",
                 maxPages
             ),
 
@@ -1433,7 +1535,7 @@ async function collectCandidates(
         ]);
 
 
-    const byId =
+    const candidateMap =
         new Map();
 
 
@@ -1448,6 +1550,7 @@ async function collectCandidates(
                     !item ||
                     !item.id
                 ) {
+
                     return;
                 }
 
@@ -1465,7 +1568,7 @@ async function collectCandidates(
                 }
 
 
-                byId.set(
+                candidateMap.set(
                     item.id,
                     item
                 );
@@ -1474,13 +1577,13 @@ async function collectCandidates(
 
 
     return [
-        ...byId.values(),
+        ...candidateMap.values(),
     ];
 }
 
 
 /* =========================================================
-   18. Bayesian 보정점수
+   18. Bayesian 보정 점수
 ========================================================= */
 
 function calculateAdjustedScore(
@@ -1507,8 +1610,8 @@ function calculateAdjustedScore(
 
 
     /*
-       후보 평균이 아니라
-       현재 품질 하한선을 prior로 사용.
+       prior = 후보 평균이 아니라
+       현재 품질 하한
     */
     const prior =
         quality.minRating;
@@ -1538,7 +1641,7 @@ function calculateAdjustedScore(
 
 
 /* =========================================================
-   19. 날짜
+   19. 작품 날짜
 ========================================================= */
 
 function getItemDate(
@@ -1546,15 +1649,21 @@ function getItemDate(
     mediaType
 ) {
 
-    return mediaType === "movie"
-        ? (
+    if (
+        mediaType === "movie"
+    ) {
+
+        return (
             item.release_date ||
             ""
-        )
-        : (
-            item.first_air_date ||
-            ""
         );
+    }
+
+
+    return (
+        item.first_air_date ||
+        ""
+    );
 }
 
 
@@ -1565,8 +1674,16 @@ function getItemDate(
 async function mapWithConcurrency(
     items,
     limit,
-    asyncMapper
+    mapper
 ) {
+
+    if (
+        items.length === 0
+    ) {
+
+        return [];
+    }
+
 
     const results =
         new Array(
@@ -1592,7 +1709,7 @@ async function mapWithConcurrency(
             results[
                 index
             ] =
-                await asyncMapper(
+                await mapper(
                     items[
                     index
                     ],
@@ -1609,7 +1726,7 @@ async function mapWithConcurrency(
         );
 
 
-    const workers =
+    await Promise.all(
         Array.from(
             {
                 length:
@@ -1617,11 +1734,7 @@ async function mapWithConcurrency(
             },
             () =>
                 worker()
-        );
-
-
-    await Promise.all(
-        workers
+        )
     );
 
 
@@ -1630,7 +1743,7 @@ async function mapWithConcurrency(
 
 
 /* =========================================================
-   21. 시리즈 분량 필터용 상세조회
+   21. 시리즈 2차 에피소드 필터
 ========================================================= */
 
 function prioritizeSeriesDetailCandidates(
@@ -1703,8 +1816,7 @@ function prioritizeSeriesDetailCandidates(
 
 
     /*
-       평가순과 최신순을 번갈아 넣어
-       어느 한쪽 후보만 상세조회하지 않도록 합니다.
+       평가순 / 최신순을 번갈아 상세조회
     */
     const ordered =
         [];
@@ -1728,52 +1840,46 @@ function prioritizeSeriesDetailCandidates(
         )
     ) {
 
-        const pair = [
+        const items = [
+
             rated[
             index
             ],
+
             recent[
             index
             ],
+
         ];
 
 
-        pair
-            .filter(
-                Boolean
-            )
-            .forEach(
-                item => {
+        for (
+            const item
+            of items
+        ) {
 
-                    if (
-                        ordered.length >=
-                        CONFIG.seriesDetailLimit
-                    ) {
+            if (
+                !item ||
+                ordered.length >=
+                CONFIG.seriesDetailLimit ||
+                seen.has(
+                    item.id
+                )
+            ) {
 
-                        return;
-                    }
-
-
-                    if (
-                        seen.has(
-                            item.id
-                        )
-                    ) {
-
-                        return;
-                    }
+                continue;
+            }
 
 
-                    seen.add(
-                        item.id
-                    );
-
-
-                    ordered.push(
-                        item
-                    );
-                }
+            seen.add(
+                item.id
             );
+
+
+            ordered.push(
+                item
+            );
+        }
 
 
         index++;
@@ -1799,13 +1905,7 @@ async function filterSeriesByEpisodeCount(
         );
 
 
-    const tmdbLanguage =
-        getTmdbLanguage(
-            language
-        );
-
-
-    const detailed =
+    const details =
         await mapWithConcurrency(
             prioritized,
             CONFIG.parallelRequestLimit,
@@ -1817,28 +1917,31 @@ async function filterSeriesByEpisodeCount(
                         `/tv/${item.id}`,
                         {
                             language:
-                                tmdbLanguage,
+                                getTmdbLanguage(
+                                    language
+                                ),
                         }
                     );
 
 
                 return {
+
                     ...item,
 
                     _episodes:
-                        detail
-                            .number_of_episodes ||
+                        detail.number_of_episodes ||
                         0,
 
                     _status:
                         detail.status ||
-                        "",
+                        null,
+
                 };
             }
         );
 
 
-    return detailed
+    return details
         .filter(
             item =>
                 item._episodes > 0 &&
@@ -1849,7 +1952,7 @@ async function filterSeriesByEpisodeCount(
 
 
 /* =========================================================
-   22. 품질 단계 선택
+   22. 품질 fallback
 ========================================================= */
 
 async function chooseCandidatePool(
@@ -1857,11 +1960,10 @@ async function chooseCandidatePool(
     requestData
 ) {
 
-    let lastCandidates =
+    let finalCandidates =
         [];
 
-
-    let lastQuality =
+    let finalQuality =
         QUALITY_LEVELS[
         QUALITY_LEVELS.length -
         1
@@ -1882,8 +1984,8 @@ async function chooseCandidatePool(
 
 
         /*
-           시리즈 분량 필터를 사용한 경우에만
-           총 에피소드 수 상세조회.
+           시리즈 에피소드 수 제한은
+           이때만 상세조회
         */
         if (
             requestData.mediaType ===
@@ -1902,10 +2004,10 @@ async function chooseCandidatePool(
         }
 
 
-        lastCandidates =
+        finalCandidates =
             candidates;
 
-        lastQuality =
+        finalQuality =
             quality;
 
 
@@ -1914,26 +2016,25 @@ async function chooseCandidatePool(
             CONFIG.minimumRecommendationCount
         ) {
 
-            return {
-                candidates,
-                quality,
-            };
+            break;
         }
     }
 
 
     return {
+
         candidates:
-            lastCandidates,
+            finalCandidates,
 
         quality:
-            lastQuality,
+            finalQuality,
+
     };
 }
 
 
 /* =========================================================
-   23. 추천 분리
+   23. 추천 구성
 ========================================================= */
 
 function buildRecommendations(
@@ -1946,6 +2047,7 @@ function buildRecommendations(
         candidates
             .map(
                 item => ({
+
                     ...item,
 
                     _adjustedScore:
@@ -1953,13 +2055,15 @@ function buildRecommendations(
                             item,
                             quality
                         ),
+
                 })
             );
 
 
-    /*
+    /* -----------------------------------------------------
        평가 Top 5
-    */
+    ----------------------------------------------------- */
+
     const topRated =
         [
             ...scored,
@@ -2007,9 +2111,10 @@ function buildRecommendations(
         );
 
 
-    /*
+    /* -----------------------------------------------------
        최신 작품 5
-    */
+    ----------------------------------------------------- */
+
     const recent =
         scored
             .filter(
@@ -2040,21 +2145,18 @@ function buildRecommendations(
             );
 
 
-    recent
-        .forEach(
-            item =>
-                usedIds.add(
-                    item.id
-                )
-        );
+    recent.forEach(
+        item =>
+            usedIds.add(
+                item.id
+            )
+    );
 
 
-    /*
+    /* -----------------------------------------------------
        행운 후보풀
+    ----------------------------------------------------- */
 
-       Top / 최신에서 사용하지 않은 후보 중
-       보정점수 상위 20개.
-    */
     const luckyPool =
         scored
             .filter(
@@ -2067,9 +2169,29 @@ function buildRecommendations(
                 (
                     a,
                     b
-                ) =>
-                    b._adjustedScore -
-                    a._adjustedScore
+                ) => {
+
+                    if (
+                        b._adjustedScore !==
+                        a._adjustedScore
+                    ) {
+
+                        return (
+                            b._adjustedScore -
+                            a._adjustedScore
+                        );
+                    }
+
+
+                    return (
+                        b.vote_count ||
+                        0
+                    ) -
+                        (
+                            a.vote_count ||
+                            0
+                        );
+                }
             )
             .slice(
                 0,
@@ -2078,15 +2200,17 @@ function buildRecommendations(
 
 
     return {
+
         topRated,
         recent,
         luckyPool,
+
     };
 }
 
 
 /* =========================================================
-   24. 클라이언트에 보낼 작품 형태
+   24. 브라우저에 전달할 작품 형태
 ========================================================= */
 
 function toPublicItem(
@@ -2155,7 +2279,7 @@ function toPublicItem(
             ),
 
         /*
-           시리즈 2차 분량 검색을 했을 때만 존재.
+           시리즈 2차 검색 시에만 존재
         */
         episodes:
             item._episodes ||
@@ -2166,17 +2290,17 @@ function toPublicItem(
             null,
 
         /*
-           OTT는 프론트에서 보이는 카드에 대해서만
-           별도 요청하여 채웁니다.
+           카드용 OTT는 별도 API에서 채움
         */
         providers:
             null,
+
     };
 }
 
 
 /* =========================================================
-   25. OTT 정보
+   25. 작품별 OTT 정보
 ========================================================= */
 
 function extractKoreanStreamingProviders(
@@ -2191,13 +2315,16 @@ function extractKoreanStreamingProviders(
         ];
 
 
-    if (!korea) {
+    if (
+        !korea
+    ) {
+
         return [];
     }
 
 
     /*
-       현재는 구독형 스트리밍(flate rate)만 사용.
+       구독형 서비스만 표시
     */
     const providers =
         korea.flatrate ||
@@ -2213,11 +2340,11 @@ function extractKoreanStreamingProviders(
                         b
                     ) =>
                         (
-                            a.display_priority ||
+                            a.display_priority ??
                             999
                         ) -
                         (
-                            b.display_priority ||
+                            b.display_priority ??
                             999
                         )
                 )
@@ -2258,17 +2385,16 @@ async function getItemProviders(
 
 
 /* =========================================================
-   26. 상세정보
+   26. 상세 정보 국가 코드
 ========================================================= */
 
-function countryCodesFromDetail(
+function getCountryCodesFromDetail(
     detail
 ) {
 
-    const productionCodes =
+    const productionCountries =
         (
-            detail
-                .production_countries ||
+            detail.production_countries ||
             []
         )
             .map(
@@ -2281,12 +2407,12 @@ function countryCodesFromDetail(
 
 
     if (
-        productionCodes.length
+        productionCountries.length
     ) {
 
         return [
             ...new Set(
-                productionCodes
+                productionCountries
             ),
         ];
     }
@@ -2429,6 +2555,7 @@ async function handleRecommend(
                     body.maxEpisodes
                 )
                 : null,
+
     };
 
 
@@ -2475,6 +2602,7 @@ async function handleRecommend(
     return {
 
         quality: {
+
             level:
                 quality.id,
 
@@ -2483,6 +2611,7 @@ async function handleRecommend(
 
             minRating:
                 quality.minRating,
+
         },
 
         candidateCount:
@@ -2491,8 +2620,7 @@ async function handleRecommend(
         notice,
 
         topRated:
-            recommendations
-                .topRated
+            recommendations.topRated
                 .map(
                     item =>
                         toPublicItem(
@@ -2502,8 +2630,7 @@ async function handleRecommend(
                 ),
 
         luckyPool:
-            recommendations
-                .luckyPool
+            recommendations.luckyPool
                 .map(
                     item =>
                         toPublicItem(
@@ -2513,8 +2640,7 @@ async function handleRecommend(
                 ),
 
         recent:
-            recommendations
-                .recent
+            recommendations.recent
                 .map(
                     item =>
                         toPublicItem(
@@ -2522,12 +2648,13 @@ async function handleRecommend(
                             requestData.mediaType
                         )
                 ),
+
     };
 }
 
 
 /* =========================================================
-   29. 카드용 OTT 정보 요청
+   29. 카드용 OTT 조회
 ========================================================= */
 
 async function handleProviders(
@@ -2535,7 +2662,7 @@ async function handleProviders(
     body
 ) {
 
-    const items =
+    const inputItems =
         Array.isArray(
             body.items
         )
@@ -2543,12 +2670,8 @@ async function handleProviders(
             : [];
 
 
-    /*
-       한 번에 너무 많은 임의 ID를 보내지 못하도록 제한.
-       현재 UI에서는 최대 13개 정도 요청합니다.
-    */
     const safeItems =
-        items
+        inputItems
             .filter(
                 item =>
                     item &&
@@ -2575,49 +2698,48 @@ async function handleProviders(
         await mapWithConcurrency(
             safeItems,
             CONFIG.parallelRequestLimit,
-            async item => {
+            async item => ({
 
-                const providers =
+                key:
+                    `${item.type}:${item.id}`,
+
+                providers:
                     await getItemProviders(
                         token,
                         item
-                    );
+                    ),
 
-
-                return {
-                    key:
-                        `${item.type}:${item.id}`,
-
-                    providers,
-                };
-            }
+            })
         );
 
 
-    const providers =
+    const providerMap =
         {};
 
 
-    results
-        .forEach(
-            item => {
+    for (
+        const result
+        of results
+    ) {
 
-                providers[
-                    item.key
-                ] =
-                    item.providers;
-            }
-        );
+        providerMap[
+            result.key
+        ] =
+            result.providers;
+    }
 
 
     return {
-        providers,
+
+        providers:
+            providerMap,
+
     };
 }
 
 
 /* =========================================================
-   30. 작품 상세 요청
+   30. 상세정보
 ========================================================= */
 
 async function handleDetail(
@@ -2660,12 +2782,6 @@ async function handleDetail(
             : "ko";
 
 
-    const tmdbLanguage =
-        getTmdbLanguage(
-            language
-        );
-
-
     const detailEndpoint =
         type === "movie"
             ? `/movie/${id}`
@@ -2689,7 +2805,9 @@ async function handleDetail(
                 detailEndpoint,
                 {
                     language:
-                        tmdbLanguage,
+                        getTmdbLanguage(
+                            language
+                        ),
                 }
             ),
 
@@ -2807,10 +2925,16 @@ async function handleDetail(
                 : null,
 
         countryCodes:
-            countryCodesFromDetail(
+            getCountryCodesFromDetail(
                 detail
             ),
 
+        /*
+           요청한 언어의 overview가 없으면
+           빈 문자열 그대로 반환.
+
+           다른 언어로 강제 fallback하지 않음.
+        */
         overview:
             detail.overview ||
             "",
@@ -2819,6 +2943,7 @@ async function handleDetail(
             extractKoreanStreamingProviders(
                 providerData
             ),
+
     };
 }
 
@@ -2838,7 +2963,9 @@ export async function onRequestPost(
                 .TMDB_TOKEN;
 
 
-        if (!token) {
+        if (
+            !token
+        ) {
 
             return jsonResponse(
                 {
@@ -2862,8 +2989,7 @@ export async function onRequestPost(
 
 
         if (
-            action ===
-            "recommend"
+            action === "recommend"
         ) {
 
             return jsonResponse(
@@ -2876,8 +3002,7 @@ export async function onRequestPost(
 
 
         if (
-            action ===
-            "providers"
+            action === "providers"
         ) {
 
             return jsonResponse(
@@ -2890,8 +3015,7 @@ export async function onRequestPost(
 
 
         if (
-            action ===
-            "detail"
+            action === "detail"
         ) {
 
             return jsonResponse(
@@ -2912,7 +3036,9 @@ export async function onRequestPost(
         );
 
 
-    } catch (error) {
+    } catch (
+    error
+    ) {
 
         console.error(
             error
@@ -2933,7 +3059,7 @@ export async function onRequestPost(
 
 
 /* =========================================================
-   GET 접근 방지
+   32. GET
 ========================================================= */
 
 export function onRequestGet() {
