@@ -8,10 +8,34 @@
 
     <title>볼만한픽 | Pick to Watch</title>
 
-    <meta name="description" content="OTT, 장르, 제작 지역과 연도를 골라 지금 볼 작품을 빠르게 찾아보세요.">
+    <!-- ==================================================
+         SEO
+    ================================================== -->
+
+    <meta id="metaDescription" name="description"
+        content="OTT, 장르, 제작 지역과 연도를 골라 지금 볼 영화와 시리즈를 빠르게 추천받아 보세요. 평가가 좋은 작품, 행운의 발견, 최신 작품을 한눈에 확인할 수 있습니다.">
+
+    <link rel="canonical" href="https://watchpick.pages.dev/">
+
+
+    <!-- ==================================================
+         Open Graph
+    ================================================== -->
+
+    <meta property="og:type" content="website">
+
+    <meta id="ogTitle" property="og:title" content="볼만한픽 | Pick to Watch">
+
+    <meta id="ogDescription" property="og:description" content="OTT, 장르, 제작 지역과 연도를 골라 지금 볼 영화와 시리즈를 빠르게 추천받아 보세요.">
+
+    <meta property="og:url" content="https://watchpick.pages.dev/">
+
+    <meta property="og:site_name" content="볼만한픽 | Pick to Watch">
+
 
     <link rel="stylesheet" href="./style.css">
 </head>
+
 
 <body>
 
@@ -19,10 +43,19 @@
 
         <section class="glass-shell">
 
+
+            <!-- ==================================================
+                 Language
+            ================================================== -->
+
             <button id="languageButton" class="language-button" type="button" aria-label="언어 변경">
                 EN
             </button>
 
+
+            <!-- ==================================================
+                 Header
+            ================================================== -->
 
             <header class="site-header">
 
@@ -35,25 +68,37 @@
                 </p>
 
                 <p class="developer">
+
                     Developed by
+
                     <a href="https://physxium.pages.dev/" target="_blank" rel="noopener noreferrer">
                         Physxium (Han Gyeol Lee) ↗
                     </a>
+
                 </p>
 
             </header>
 
 
+            <!-- ==================================================
+                 Filters
+            ================================================== -->
+
             <section class="filter-panel">
+
+
+                <!-- 콘텐츠 유형 -->
 
                 <div class="filter-block">
 
                     <div class="filter-heading-row">
 
                         <div>
+
                             <h2 id="mediaTypeTitle" class="filter-title">
                                 뭘 볼까요?
                             </h2>
+
                         </div>
 
                         <div class="completion-badge complete" id="mediaTypeCheck" aria-hidden="true">
@@ -62,29 +107,27 @@
 
                     </div>
 
-                    <div class="choice-row" id="mediaTypeFilters">
-
-                        <button class="choice-button active" type="button" data-media-type="movie">
-                            영화
-                        </button>
-
-                        <button class="choice-button" type="button" data-media-type="series">
-                            시리즈
-                        </button>
-
-                    </div>
+                    <div class="choice-row" id="mediaTypeFilters"></div>
 
                 </div>
 
+
+                <!-- OTT -->
 
                 <div class="filter-block">
 
                     <div class="filter-heading-row">
 
                         <div>
+
                             <h2 id="ottTitle" class="filter-title">
                                 어디서 볼까요?
                             </h2>
+
+                            <p id="ottHint" class="filter-hint">
+                                여러 개를 선택할 수 있어요.
+                            </p>
+
                         </div>
 
                         <div class="completion-badge complete" id="ottCheck" aria-hidden="true">
@@ -98,11 +141,14 @@
                 </div>
 
 
+                <!-- 장르 -->
+
                 <div class="filter-block">
 
                     <div class="filter-heading-row">
 
                         <div>
+
                             <h2 id="genreTitle" class="filter-title">
                                 어떤 장르가 좋나요?
                             </h2>
@@ -110,6 +156,7 @@
                             <p id="genreHint" class="filter-hint">
                                 여러 개를 선택할 수 있어요.
                             </p>
+
                         </div>
 
                         <div class="completion-badge" id="genreCheck" aria-hidden="true">
@@ -118,7 +165,9 @@
 
                     </div>
 
+
                     <div class="choice-row" id="genreFilters"></div>
+
 
                     <div class="genre-mode-wrap hidden" id="genreModeWrap">
 
@@ -143,11 +192,14 @@
                 </div>
 
 
+                <!-- 제작지역 -->
+
                 <div class="filter-block">
 
                     <div class="filter-heading-row">
 
                         <div>
+
                             <h2 id="regionTitle" class="filter-title">
                                 어디서 만든 작품을 볼까요?
                             </h2>
@@ -155,6 +207,7 @@
                             <p id="regionHint" class="filter-hint">
                                 여러 지역을 선택할 수 있어요.
                             </p>
+
                         </div>
 
                         <div class="completion-badge" id="regionCheck" aria-hidden="true">
@@ -168,14 +221,18 @@
                 </div>
 
 
+                <!-- 연도 -->
+
                 <div class="filter-block">
 
                     <div class="filter-heading-row">
 
                         <div>
+
                             <h2 id="yearTitle" class="filter-title">
                                 연도도 골라볼까요?
                             </h2>
+
                         </div>
 
                         <div class="completion-badge" id="yearCheck" aria-hidden="true">
@@ -196,6 +253,10 @@
             </section>
 
 
+            <!-- ==================================================
+                 Results
+            ================================================== -->
+
             <section id="resultsSection" class="results-section hidden">
 
                 <div class="results-intro">
@@ -211,11 +272,14 @@
                 </div>
 
 
+                <!-- 평가 Top -->
+
                 <section class="result-group">
 
                     <div class="result-heading">
 
                         <div>
+
                             <h3 id="topRatedTitle">
                                 평가 Top 5
                             </h3>
@@ -223,6 +287,7 @@
                             <p id="topRatedDescription">
                                 평가가 좋은 작품부터 골랐어요.
                             </p>
+
                         </div>
 
                     </div>
@@ -232,11 +297,14 @@
                 </section>
 
 
+                <!-- 행운 -->
+
                 <section class="result-group">
 
                     <div class="result-heading">
 
                         <div>
+
                             <h3 id="luckyTitle">
                                 행운의 발견
                             </h3>
@@ -244,6 +312,7 @@
                             <p id="luckyDescription">
                                 평가 Top 5에는 들지 못했지만 충분히 좋은 작품 중 골랐어요.
                             </p>
+
                         </div>
 
                     </div>
@@ -261,11 +330,14 @@
                 </section>
 
 
+                <!-- 최신 -->
+
                 <section class="result-group">
 
                     <div class="result-heading">
 
                         <div>
+
                             <h3 id="recentTitle">
                                 최신 작품
                             </h3>
@@ -273,6 +345,7 @@
                             <p id="recentDescription">
                                 최근에 나온 작품부터 보여드려요.
                             </p>
+
                         </div>
 
                     </div>
@@ -281,6 +354,8 @@
 
                 </section>
 
+
+                <!-- 분량 2차 필터 -->
 
                 <section class="refine-panel">
 
@@ -303,17 +378,51 @@
             </section>
 
 
+            <!-- ==================================================
+                 Footer / Credits
+            ================================================== -->
+
             <footer class="site-footer">
 
-                <p id="sourceText">
-                    영화·시리즈 정보는 TMDB 데이터를 기반으로 제공합니다.
-                </p>
+                <div class="source-credit">
+
+                    <a class="tmdb-link" href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer"
+                        aria-label="TMDB">
+
+                        <img class="tmdb-logo" src="./assets/tmdb-logo.svg" alt="TMDB">
+
+                    </a>
+
+
+                    <p>
+
+                        <span id="sourceTmdb">
+                            영화·시리즈 정보 및 이미지는 TMDB를 기반으로 제공합니다.
+                        </span>
+
+                        <br>
+
+                        <span id="sourceOtt">
+                            OTT 제공 정보는 JustWatch를 기반으로 하며 대한민국 기준입니다.
+                        </span>
+
+                    </p>
+
+
+                    <p class="tmdb-notice">
+                        This product uses the TMDB API but is not endorsed or certified by TMDB.
+                    </p>
+
+                </div>
+
 
                 <p>
+
                     <a id="privacyLink" href="https://physxium.pages.dev/privacy" target="_blank"
                         rel="noopener noreferrer">
                         개인정보처리방침 / Privacy Policy
                     </a>
+
                 </p>
 
             </footer>
@@ -322,6 +431,10 @@
 
     </main>
 
+
+    <!-- ==================================================
+         Detail Modal
+    ================================================== -->
 
     <div id="detailModal" class="modal-backdrop" aria-hidden="true">
 
@@ -337,6 +450,10 @@
 
     </div>
 
+
+    <!-- ==================================================
+         Coffee
+    ================================================== -->
 
     <nav class="floating-bar" aria-label="Support">
 

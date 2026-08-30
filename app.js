@@ -1,16 +1,22 @@
 /* =========================================================
    볼만한픽 / Pick to Watch
 
+   구성
+   ---------------------------------------------------------
    1. 사이트 설정
-   2. 한/영 문구
+   2. 한 / 영 문구
    3. 필터 목록
    4. 상태
-   5. UI 렌더링
-   6. API
-   7. 추천 / 재추첨
-   8. 상세 팝업
+   5. 기본 Helpers
+   6. 필터 UI
+   7. API
+   8. 추천 결과
+   9. 재추첨
+   10. 상세 정보
+   11. 언어 전환
+   12. 시작
 
-   자주 수정할 내용은 위쪽에 모아두었습니다.
+   자주 수정할 문구와 필터는 파일 위쪽에 모아두었습니다.
 ========================================================= */
 
 
@@ -41,13 +47,27 @@ const CONFIG = {
 /* =========================================================
    2. 한 / 영 문구
 
-   사이트 문구를 고치고 싶으면
+   사이트 문구를 수정하고 싶으면
    대부분 이 부분만 수정하면 됩니다.
 ========================================================= */
 
 const TEXT = {
 
     ko: {
+
+        /* SEO */
+
+        pageTitle:
+            "볼만한픽 | Pick to Watch",
+
+        metaDescription:
+            "OTT, 장르, 제작 지역과 연도를 골라 지금 볼 영화와 시리즈를 빠르게 추천받아 보세요. 평가가 좋은 작품, 행운의 발견, 최신 작품을 한눈에 확인할 수 있습니다.",
+
+        ogDescription:
+            "OTT, 장르, 제작 지역과 연도를 골라 지금 볼 영화와 시리즈를 빠르게 추천받아 보세요.",
+
+
+        /* Header */
 
         languageButton:
             "EN",
@@ -58,11 +78,17 @@ const TEXT = {
         siteSubtitle:
             "오늘 볼 작품을 빠르게 골라보세요.",
 
+
+        /* Filters */
+
         mediaTypeTitle:
             "뭘 볼까요?",
 
         ottTitle:
             "어디서 볼까요?",
+
+        ottHint:
+            "여러 개를 선택할 수 있어요.",
 
         genreTitle:
             "어떤 장르가 좋나요?",
@@ -91,6 +117,9 @@ const TEXT = {
         pick:
             "PICK",
 
+
+        /* Results */
+
         resultsTitle:
             "오늘의 픽",
 
@@ -118,6 +147,9 @@ const TEXT = {
         reroll:
             "재추첨",
 
+
+        /* Refine */
+
         refineTitle:
             "시간이 부족하다면 결과를 더 좁혀보세요.",
 
@@ -127,14 +159,23 @@ const TEXT = {
         refinePick:
             "다시 PICK",
 
-        sourceText:
-            "영화·시리즈 정보는 TMDB를, OTT 제공 정보는 JustWatch 기반 TMDB 데이터를 사용합니다.",
+
+        /* Footer */
+
+        sourceTmdb:
+            "영화·시리즈 정보 및 이미지는 TMDB를 기반으로 제공합니다.",
+
+        sourceOtt:
+            "OTT 제공 정보는 JustWatch를 기반으로 하며 대한민국 기준입니다.",
 
         privacy:
             "개인정보처리방침 / Privacy Policy",
 
         support:
             "유용했다면 ☕ 커피 후원",
+
+
+        /* Cards / Detail */
 
         detail:
             "상세 보기 ›",
@@ -181,6 +222,9 @@ const TEXT = {
         episodes:
             "화",
 
+
+        /* Loading */
+
         loadingTop:
             "평가가 좋은 작품을 찾는 중...",
 
@@ -208,15 +252,33 @@ const TEXT = {
         error:
             "작품 정보를 불러오지 못했습니다.",
 
+
+        /* Rating */
+
         ratingsPrefix:
             "평가",
 
         ratingsSuffix:
             "명",
+
     },
 
 
     en: {
+
+        /* SEO */
+
+        pageTitle:
+            "Pick to Watch | 볼만한픽",
+
+        metaDescription:
+            "Choose a streaming service, genre, production region and release period to quickly discover movies and series worth watching.",
+
+        ogDescription:
+            "Quickly discover movies and series based on your streaming services and preferences.",
+
+
+        /* Header */
 
         languageButton:
             "한국어",
@@ -227,11 +289,17 @@ const TEXT = {
         siteSubtitle:
             "Find something worth watching, quickly.",
 
+
+        /* Filters */
+
         mediaTypeTitle:
             "What do you want to watch?",
 
         ottTitle:
             "Where do you want to watch?",
+
+        ottHint:
+            "You can select multiple services.",
 
         genreTitle:
             "What genres are you in the mood for?",
@@ -260,6 +328,9 @@ const TEXT = {
         pick:
             "PICK",
 
+
+        /* Results */
+
         resultsTitle:
             "Today's Picks",
 
@@ -287,6 +358,9 @@ const TEXT = {
         reroll:
             "Pick Again",
 
+
+        /* Refine */
+
         refineTitle:
             "Short on time? Narrow the results.",
 
@@ -296,14 +370,23 @@ const TEXT = {
         refinePick:
             "PICK AGAIN",
 
-        sourceText:
-            "Movie and series data is provided by TMDB. Streaming availability is sourced from JustWatch via TMDB.",
+
+        /* Footer */
+
+        sourceTmdb:
+            "Movie, series and image data is provided by TMDB.",
+
+        sourceOtt:
+            "Streaming availability is sourced from JustWatch and is based on South Korea.",
 
         privacy:
             "Privacy Policy",
 
         support:
             "Enjoying this? ☕ Buy me a coffee",
+
+
+        /* Cards / Detail */
 
         detail:
             "View details ›",
@@ -350,6 +433,9 @@ const TEXT = {
         episodes:
             "episodes",
 
+
+        /* Loading */
+
         loadingTop:
             "Finding highly rated picks...",
 
@@ -377,11 +463,15 @@ const TEXT = {
         error:
             "Could not load recommendations.",
 
+
+        /* Rating */
+
         ratingsPrefix:
             "",
 
         ratingsSuffix:
             " ratings",
+
     },
 
 };
@@ -394,25 +484,15 @@ const TEXT = {
 const MEDIA_TYPES = [
 
     {
-        id:
-            "movie",
-
-        ko:
-            "영화",
-
-        en:
-            "Movie",
+        id: "movie",
+        ko: "영화",
+        en: "Movie",
     },
 
     {
-        id:
-            "series",
-
-        ko:
-            "시리즈",
-
-        en:
-            "Series",
+        id: "series",
+        ko: "시리즈",
+        en: "Series",
     },
 
 ];
@@ -421,75 +501,45 @@ const MEDIA_TYPES = [
 /* =========================================================
    4. OTT
 
-   id는 recommend.js의 OTT_ALIASES와 맞춰야 합니다.
+   id는 recommend.js의 OTT 설정과 맞아야 합니다.
 ========================================================= */
 
 const OTT_PROVIDERS = [
 
     {
-        id:
-            "all",
-
-        ko:
-            "전체",
-
-        en:
-            "All",
+        id: "all",
+        ko: "전체",
+        en: "All",
     },
 
     {
-        id:
-            "netflix",
-
-        ko:
-            "Netflix",
-
-        en:
-            "Netflix",
+        id: "netflix",
+        ko: "Netflix",
+        en: "Netflix",
     },
 
     {
-        id:
-            "disney",
-
-        ko:
-            "Disney+",
-
-        en:
-            "Disney+",
+        id: "disney",
+        ko: "Disney+",
+        en: "Disney+",
     },
 
     {
-        id:
-            "wavve",
-
-        ko:
-            "Wavve",
-
-        en:
-            "Wavve",
+        id: "wavve",
+        ko: "Wavve",
+        en: "Wavve",
     },
 
     {
-        id:
-            "tving",
-
-        ko:
-            "TVING",
-
-        en:
-            "TVING",
+        id: "tving",
+        ko: "TVING",
+        en: "TVING",
     },
 
     {
-        id:
-            "watcha",
-
-        ko:
-            "WATCHA",
-
-        en:
-            "WATCHA",
+        id: "watcha",
+        ko: "WATCHA",
+        en: "WATCHA",
     },
 
 ];
@@ -497,9 +547,6 @@ const OTT_PROVIDERS = [
 
 /* =========================================================
    5. 영화 장르
-
-   id는 recommend.js의
-   MOVIE_GENRE_GROUPS와 맞춰야 합니다.
 ========================================================= */
 
 const MOVIE_GENRES = [
@@ -575,9 +622,6 @@ const MOVIE_GENRES = [
 
 /* =========================================================
    6. 시리즈 장르
-
-   id는 recommend.js의
-   SERIES_GENRE_GROUPS와 맞춰야 합니다.
 ========================================================= */
 
 const SERIES_GENRES = [
@@ -691,54 +735,34 @@ const REGIONS = [
 const YEAR_OPTIONS = [
 
     {
-        id:
-            "all",
-
-        ko:
-            "상관없음",
-
-        en:
-            "Any year",
+        id: "all",
+        ko: "상관없음",
+        en: "Any year",
     },
 
     {
-        id:
-            "3",
-
-        ko:
-            "최근 3년 이내",
-
-        en:
-            "Within 3 years",
+        id: "3",
+        ko: "최근 3년 이내",
+        en: "Within 3 years",
     },
 
     {
-        id:
-            "10",
-
-        ko:
-            "최근 10년 이내",
-
-        en:
-            "Within 10 years",
+        id: "10",
+        ko: "최근 10년 이내",
+        en: "Within 10 years",
     },
 
     {
-        id:
-            "20",
-
-        ko:
-            "최근 20년 이내",
-
-        en:
-            "Within 20 years",
+        id: "20",
+        ko: "최근 20년 이내",
+        en: "Within 20 years",
     },
 
 ];
 
 
 /* =========================================================
-   9. 2차 영화 분량
+   9. 2차 영화 길이
 ========================================================= */
 
 const MOVIE_RUNTIME_OPTIONS = [
@@ -775,7 +799,7 @@ const MOVIE_RUNTIME_OPTIONS = [
 
 
 /* =========================================================
-   10. 2차 시리즈 분량
+   10. 2차 시리즈 길이
 ========================================================= */
 
 const SERIES_EPISODE_OPTIONS = [
@@ -812,7 +836,7 @@ const SERIES_EPISODE_OPTIONS = [
 
 
 /* =========================================================
-   11. 상태
+   11. 현재 상태
 ========================================================= */
 
 const state = {
@@ -824,9 +848,7 @@ const state = {
             ""
         )
             .toLowerCase()
-            .startsWith(
-                "ko"
-            )
+            .startsWith("ko")
             ? "ko"
             : "en",
 
@@ -847,10 +869,6 @@ const state = {
     selectedRegions:
         new Set(),
 
-    /*
-       연도는 사용자가 직접 하나 선택해야 하므로
-       기본값 없음.
-    */
     selectedYear:
         null,
 
@@ -974,7 +992,7 @@ const modalClose =
 
 
 /* =========================================================
-   13. 기본 Helpers
+   13. Helpers
 ========================================================= */
 
 function getText() {
@@ -1040,8 +1058,8 @@ function getGenreById(
 
     return getCurrentGenres()
         .find(
-            genre =>
-                genre.id === id
+            item =>
+                item.id === id
         );
 }
 
@@ -1056,7 +1074,7 @@ function getRefineOptions() {
 
 
 /* =========================================================
-   14. 결과 무효화
+   14. 기존 결과 초기화
 ========================================================= */
 
 function invalidateResults(
@@ -1112,8 +1130,7 @@ function renderMediaTypes() {
                     <button
                         class="
                             choice-button
-                            ${state.mediaType ===
-                        item.id
+                            ${state.mediaType === item.id
                         ? "active"
                         : ""
                     }
@@ -1122,9 +1139,7 @@ function renderMediaTypes() {
                         data-media-type="${item.id}"
                     >
                         ${escapeHtml(
-                        getLabel(
-                            item
-                        )
+                        getLabel(item)
                     )}
                     </button>
                 `
@@ -1162,11 +1177,11 @@ function renderMediaTypes() {
 
                         /*
                            영화와 시리즈의 장르 체계가 다르므로
-                           콘텐츠 유형 변경 시 기존 장르 초기화.
+                           콘텐츠 유형 변경 시 기존 장르는 초기화합니다.
                         */
+
                         state.selectedGenres =
                             new Set();
-
 
                         state.genreMode =
                             "any";
@@ -1212,9 +1227,7 @@ function renderOttFilters() {
                         data-ott="${item.id}"
                     >
                         ${escapeHtml(
-                        getLabel(
-                            item
-                        )
+                        getLabel(item)
                     )}
                     </button>
                 `
@@ -1234,13 +1247,15 @@ function renderOttFilters() {
                     () => {
 
                         const id =
-                            button.dataset
-                                .ott;
+                            button.dataset.ott;
 
+
+                        /*
+                           전체 선택
+                        */
 
                         if (
-                            id ===
-                            "all"
+                            id === "all"
                         ) {
 
                             state.selectedOtt =
@@ -1274,9 +1289,10 @@ function renderOttFilters() {
 
 
                             /*
-                               아무 OTT도 안 남으면
-                               자동으로 전체로 복귀.
+                               아무 OTT도 선택되지 않았다면
+                               전체로 자동 복귀.
                             */
+
                             if (
                                 state.selectedOtt.size ===
                                 0
@@ -1293,7 +1309,6 @@ function renderOttFilters() {
                             true
                         );
 
-
                         renderOttFilters();
                     }
                 );
@@ -1308,12 +1323,8 @@ function renderOttFilters() {
 
 function renderGenres() {
 
-    const genres =
-        getCurrentGenres();
-
-
     genreFilters.innerHTML =
-        genres
+        getCurrentGenres()
             .map(
                 item => `
                     <button
@@ -1330,9 +1341,7 @@ function renderGenres() {
                         data-genre="${item.id}"
                     >
                         ${escapeHtml(
-                        getLabel(
-                            item
-                        )
+                        getLabel(item)
                     )}
                     </button>
                 `
@@ -1352,8 +1361,7 @@ function renderGenres() {
                     () => {
 
                         const id =
-                            button.dataset
-                                .genre;
+                            button.dataset.genre;
 
 
                         if (
@@ -1374,10 +1382,6 @@ function renderGenres() {
                         }
 
 
-                        /*
-                           장르가 하나 이하가 되면
-                           AND/OR 의미가 없으므로 기본 any로 복귀.
-                        */
                         if (
                             state.selectedGenres.size <
                             2
@@ -1492,9 +1496,7 @@ function renderRegions() {
                         data-region="${item.id}"
                     >
                         ${escapeHtml(
-                        getLabel(
-                            item
-                        )
+                        getLabel(item)
                     )}
                     </button>
                 `
@@ -1514,8 +1516,7 @@ function renderRegions() {
                     () => {
 
                         const id =
-                            button.dataset
-                                .region;
+                            button.dataset.region;
 
 
                         if (
@@ -1573,9 +1574,7 @@ function renderYears() {
                         data-year="${item.id}"
                     >
                         ${escapeHtml(
-                        getLabel(
-                            item
-                        )
+                        getLabel(item)
                     )}
                     </button>
                 `
@@ -1595,8 +1594,7 @@ function renderYears() {
                     () => {
 
                         state.selectedYear =
-                            button.dataset
-                                .year;
+                            button.dataset.year;
 
 
                         invalidateResults(
@@ -1614,7 +1612,7 @@ function renderYears() {
 
 
 /* =========================================================
-   21. 완료 체크
+   21. 완료 체크 / PICK 버튼
 ========================================================= */
 
 function setComplete(
@@ -1622,15 +1620,21 @@ function setComplete(
     complete
 ) {
 
-    document
-        .getElementById(
+    const element =
+        document.getElementById(
             elementId
-        )
-        .classList
-        .toggle(
-            "complete",
-            complete
         );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    element.classList.toggle(
+        "complete",
+        complete
+    );
 }
 
 
@@ -1828,6 +1832,7 @@ function buildRecommendPayload(
         maxRuntime,
 
         maxEpisodes,
+
     };
 }
 
@@ -1846,57 +1851,52 @@ function showLoading(
 
     const seriesRefining =
         refine &&
-        state.mediaType ===
-        "series" &&
-        state.selectedRefine !==
-        "all";
+        state.mediaType === "series" &&
+        state.selectedRefine !== "all";
+
+
+    const topMessage =
+        seriesRefining
+            ? text.seriesRefineLoading
+            : text.loadingTop;
+
+
+    const luckyMessage =
+        seriesRefining
+            ? text.seriesRefineLoading
+            : text.loadingLucky;
+
+
+    const recentMessage =
+        seriesRefining
+            ? text.seriesRefineLoading
+            : text.loadingRecent;
 
 
     topRatedGrid.innerHTML = `
         <div class="loading-card">
-            ${seriesRefining
-            ? escapeHtml(
-                text.seriesRefineLoading
-            )
-            : escapeHtml(
-                text.loadingTop
-            )
-        }
+            ${escapeHtml(topMessage)}
         </div>
     `;
 
 
     luckyGrid.innerHTML = `
         <div class="loading-card">
-            ${seriesRefining
-            ? escapeHtml(
-                text.seriesRefineLoading
-            )
-            : escapeHtml(
-                text.loadingLucky
-            )
-        }
+            ${escapeHtml(luckyMessage)}
         </div>
     `;
 
 
     recentGrid.innerHTML = `
         <div class="loading-card">
-            ${seriesRefining
-            ? escapeHtml(
-                text.seriesRefineLoading
-            )
-            : escapeHtml(
-                text.loadingRecent
-            )
-        }
+            ${escapeHtml(recentMessage)}
         </div>
     `;
 }
 
 
 /* =========================================================
-   25. 행운 추첨
+   25. 행운의 발견
 ========================================================= */
 
 function shuffle(
@@ -1910,36 +1910,28 @@ function shuffle(
 
 
     for (
-        let index =
+        let i =
             copy.length - 1;
-        index > 0;
-        index--
+        i > 0;
+        i--
     ) {
 
-        const target =
+        const j =
             Math.floor(
                 Math.random() *
                 (
-                    index +
+                    i +
                     1
                 )
             );
 
 
         [
-            copy[
-            index
-            ],
-            copy[
-            target
-            ],
+            copy[i],
+            copy[j],
         ] = [
-                copy[
-                target
-                ],
-                copy[
-                index
-                ],
+                copy[j],
+                copy[i],
             ];
     }
 
@@ -1949,6 +1941,18 @@ function shuffle(
 
 
 function pickLucky() {
+
+    if (
+        state.luckyPool.length ===
+        0
+    ) {
+
+        state.currentLucky =
+            [];
+
+        return;
+    }
+
 
     let available =
         state.luckyPool
@@ -1960,16 +1964,21 @@ function pickLucky() {
             );
 
 
-    /*
-       후보가 한 바퀴 돌았으면
-       다시 전체 풀을 사용할 수 있게 함.
-    */
-    if (
-        available.length <
+    const needed =
         Math.min(
             CONFIG.luckyCount,
             state.luckyPool.length
-        )
+        );
+
+
+    /*
+       후보를 거의 다 봤으면
+       다시 전체 후보풀을 엽니다.
+    */
+
+    if (
+        available.length <
+        needed
     ) {
 
         state.luckySeenIds.clear();
@@ -1988,22 +1997,24 @@ function pickLucky() {
         )
             .slice(
                 0,
-                CONFIG.luckyCount
+                needed
             );
 
 
     state.currentLucky
         .forEach(
-            item =>
+            item => {
+
                 state.luckySeenIds.add(
                     item.id
-                )
+                );
+            }
         );
 }
 
 
 /* =========================================================
-   26. 평점/평가수
+   26. 평점 / 평가수
 ========================================================= */
 
 function formatRating(
@@ -2020,6 +2031,16 @@ function formatRating(
             : "en-US";
 
 
+    const rating =
+        Number(
+            item.rating ||
+            0
+        )
+            .toFixed(
+                1
+            );
+
+
     const voteCount =
         Number(
             item.voteCount ||
@@ -2031,26 +2052,26 @@ function formatRating(
 
 
     if (
-        state.language ===
-        "ko"
+        state.language === "ko"
     ) {
 
         return (
-            `★ ${Number(item.rating).toFixed(1)} ` +
-            `· ${text.ratingsPrefix} ${voteCount}${text.ratingsSuffix}`
+            `★ ${rating} · ` +
+            `${text.ratingsPrefix} ` +
+            `${voteCount}${text.ratingsSuffix}`
         );
     }
 
 
     return (
-        `★ ${Number(item.rating).toFixed(1)} ` +
-        `· ${voteCount}${text.ratingsSuffix}`
+        `★ ${rating} · ` +
+        `${voteCount}${text.ratingsSuffix}`
     );
 }
 
 
 /* =========================================================
-   27. 상태
+   27. 시리즈 상태
 ========================================================= */
 
 function getStatusLabel(
@@ -2075,10 +2096,8 @@ function getStatusLabel(
 
 
     if (
-        status ===
-        "Returning Series" ||
-        status ===
-        "In Production"
+        status === "Returning Series" ||
+        status === "In Production"
     ) {
 
         return text.ongoing;
@@ -2086,8 +2105,7 @@ function getStatusLabel(
 
 
     if (
-        status ===
-        "Canceled"
+        status === "Canceled"
     ) {
 
         return text.canceled;
@@ -2095,10 +2113,8 @@ function getStatusLabel(
 
 
     if (
-        status ===
-        "Planned" ||
-        status ===
-        "Pilot"
+        status === "Planned" ||
+        status === "Pilot"
     ) {
 
         return text.planned;
@@ -2122,8 +2138,7 @@ function getTypeMeta(
 
 
     if (
-        item.type ===
-        "movie"
+        item.type === "movie"
     ) {
 
         if (
@@ -2247,10 +2262,6 @@ function formatProviderText(
     }
 
 
-    /*
-       카드가 좁으므로 최대 2개까지만 표시.
-       상세 팝업에서는 전부 표시합니다.
-    */
     const visible =
         item.providers
             .slice(
@@ -2303,7 +2314,7 @@ function getPosterUrl(
 
 
 /* =========================================================
-   32. 포스터 카드
+   32. 카드
 ========================================================= */
 
 function posterCard(
@@ -2328,9 +2339,7 @@ function posterCard(
             tabindex="0"
             role="button"
             data-item-id="${item.id}"
-            data-item-type="${escapeHtml(
-        item.type
-    )}"
+            data-item-type="${escapeHtml(item.type)}"
         >
 
             <div class="poster-image-wrap">
@@ -2339,20 +2348,14 @@ function posterCard(
             ? `
                             <img
                                 class="poster-image"
-                                src="${escapeHtml(
-                posterUrl
-            )}"
-                                alt="${escapeHtml(
-                item.title
-            )}"
+                                src="${escapeHtml(posterUrl)}"
+                                alt="${escapeHtml(item.title)}"
                                 loading="lazy"
                             >
                         `
             : `
                             <div class="poster-placeholder">
-                                ${escapeHtml(
-                item.title
-            )}
+                                ${escapeHtml(item.title)}
                             </div>
                         `
         }
@@ -2363,17 +2366,13 @@ function posterCard(
             <div class="poster-info">
 
                 <h4 class="poster-title">
-                    ${escapeHtml(
-            item.title
-        )}
+                    ${escapeHtml(item.title)}
                 </h4>
 
 
                 <p class="poster-meta">
                     ${escapeHtml(
-            getTypeMeta(
-                item
-            )
+            getTypeMeta(item)
         )}
                 </p>
 
@@ -2386,9 +2385,7 @@ function posterCard(
                 .map(
                     genre => `
                                                 <span class="poster-genre">
-                                                    ${escapeHtml(
-                        genre
-                    )}
+                                                    ${escapeHtml(genre)}
                                                 </span>
                                             `
                 )
@@ -2403,24 +2400,23 @@ function posterCard(
 
                 <p class="poster-rating">
                     ${escapeHtml(
-            formatRating(
-                item
-            )
+            formatRating(item)
         )}
                 </p>
 
 
                 <p class="poster-bottom">
+
                     ${escapeHtml(
-            item.year ||
-            "-"
+            item.year || "-"
         )}
+
                     ·
+
                     ${escapeHtml(
-            formatProviderText(
-                item
-            )
+            formatProviderText(item)
         )}
+
                 </p>
 
 
@@ -2438,7 +2434,7 @@ function posterCard(
 
 
 /* =========================================================
-   33. 카드 이미지 오류 처리
+   33. 포스터 이미지 오류 fallback
 ========================================================= */
 
 function setupImageFallbacks(
@@ -2462,16 +2458,12 @@ function setupImageFallbacks(
 
                         wrap.innerHTML = `
                             <div class="poster-placeholder">
-                                ${escapeHtml(
-                            image.alt
-                        )
-                            }
+                                ${escapeHtml(image.alt)}
                             </div>
                         `;
                     },
                     {
-                        once:
-                            true,
+                        once: true,
                     }
                 );
             }
@@ -2480,7 +2472,7 @@ function setupImageFallbacks(
 
 
 /* =========================================================
-   34. 카드 렌더링
+   34. 결과 카드 렌더링
 ========================================================= */
 
 function findRecommendationItem(
@@ -2489,9 +2481,7 @@ function findRecommendationItem(
 ) {
 
     const numericId =
-        Number(
-            id
-        );
+        Number(id);
 
 
     return [
@@ -2532,9 +2522,7 @@ function renderCards(
         items
             .map(
                 item =>
-                    posterCard(
-                        item
-                    )
+                    posterCard(item)
             )
             .join("");
 
@@ -2556,11 +2544,8 @@ function renderCards(
 
                         const item =
                             findRecommendationItem(
-                                card.dataset
-                                    .itemType,
-
-                                card.dataset
-                                    .itemId
+                                card.dataset.itemType,
+                                card.dataset.itemId
                             );
 
 
@@ -2586,10 +2571,8 @@ function renderCards(
                     event => {
 
                         if (
-                            event.key ===
-                            "Enter" ||
-                            event.key ===
-                            " "
+                            event.key === "Enter" ||
+                            event.key === " "
                         ) {
 
                             event.preventDefault();
@@ -2719,6 +2702,7 @@ async function loadProvidersForItems(
 
     const data =
         await callApi({
+
             action:
                 "providers",
 
@@ -2732,6 +2716,7 @@ async function loadProvidersForItems(
                             item.type,
                     })
                 ),
+
         });
 
 
@@ -2795,16 +2780,19 @@ async function performRecommendation(
 
 
         /*
-           추천 결과는 먼저 바로 표시.
-           OTT 정보는 뒤에서 추가로 채웁니다.
+           먼저 추천 결과를 보여주고
+           OTT 정보는 추가 요청 후 갱신합니다.
         */
+
         renderAllResults();
 
 
         const visibleItems = [
+
             ...state.topRated,
             ...state.currentLucky,
             ...state.recent,
+
         ];
 
 
@@ -2823,15 +2811,11 @@ async function performRecommendation(
         ) {
 
             console.error(
-                "OTT 정보:",
+                "OTT 정보 조회 실패:",
                 providerError
             );
 
 
-            /*
-               OTT 부가정보 실패 때문에
-               추천 결과 전체를 실패시키지는 않음.
-            */
             allStoredItems()
                 .forEach(
                     item => {
@@ -2958,12 +2942,8 @@ async function rerollLucky() {
 
 function renderRefineFilters() {
 
-    const options =
-        getRefineOptions();
-
-
     refineFilters.innerHTML =
-        options
+        getRefineOptions()
             .map(
                 item => `
                     <button
@@ -2979,9 +2959,7 @@ function renderRefineFilters() {
                         data-refine="${item.id}"
                     >
                         ${escapeHtml(
-                        getLabel(
-                            item
-                        )
+                        getLabel(item)
                     )}
                     </button>
                 `
@@ -3001,8 +2979,7 @@ function renderRefineFilters() {
                     () => {
 
                         state.selectedRefine =
-                            button.dataset
-                                .refine;
+                            button.dataset.refine;
 
 
                         renderRefineFilters();
@@ -3025,8 +3002,7 @@ function formatCountries(
         !Array.isArray(
             countryCodes
         ) ||
-        countryCodes.length ===
-        0
+        countryCodes.length === 0
     ) {
 
         return "-";
@@ -3038,8 +3014,7 @@ function formatCountries(
         const displayNames =
             new Intl.DisplayNames(
                 [
-                    state.language ===
-                        "ko"
+                    state.language === "ko"
                         ? "ko"
                         : "en",
                 ],
@@ -3053,9 +3028,7 @@ function formatCountries(
         return countryCodes
             .map(
                 code =>
-                    displayNames.of(
-                        code
-                    ) ||
+                    displayNames.of(code) ||
                     code
             )
             .join(
@@ -3175,9 +3148,7 @@ function renderDetailModal(
             detail.providers
         ) &&
             detail.providers.length
-            ? detail.providers.join(
-                ", "
-            )
+            ? detail.providers.join(", ")
             : text.noProvider;
 
 
@@ -3186,20 +3157,19 @@ function renderDetailModal(
 
 
     if (
-        detail.type ===
-        "movie" &&
+        detail.type === "movie" &&
         detail.runtime
     ) {
 
         extraInfo.push(
-            `${text.runtime} · ${detail.runtime}${text.minutes}`
+            `${text.runtime} · ` +
+            `${detail.runtime}${text.minutes}`
         );
     }
 
 
     if (
-        detail.type ===
-        "series"
+        detail.type === "series"
     ) {
 
         const status =
@@ -3233,7 +3203,8 @@ function renderDetailModal(
         ) {
 
             extraInfo.push(
-                `${text.episodeCount} ${detail.episodes}${text.episodes}`
+                `${text.episodeCount} ` +
+                `${detail.episodes}${text.episodes}`
             );
         }
     }
@@ -3245,12 +3216,8 @@ function renderDetailModal(
             ? `
                     <img
                         class="modal-poster"
-                        src="${escapeHtml(
-                posterUrl
-            )}"
-                        alt="${escapeHtml(
-                detail.title
-            )}"
+                        src="${escapeHtml(posterUrl)}"
+                        alt="${escapeHtml(detail.title)}"
                     >
                 `
             : ""
@@ -3279,9 +3246,7 @@ function renderDetailModal(
             ? `
                         <br>
                         ${escapeHtml(
-                extraInfo.join(
-                    " · "
-                )
+                extraInfo.join(" · ")
             )}
                     `
             : ""
@@ -3290,16 +3255,13 @@ function renderDetailModal(
             <br>
 
             ${escapeHtml(
-            formatRating(
-                detail
-            )
+            formatRating(detail)
         )}
 
             <br>
 
             ${escapeHtml(
-            detail.year ||
-            "-"
+            detail.year || "-"
         )}
 
             <br>
@@ -3372,7 +3334,7 @@ function closeDetailModal() {
 
 
 /* =========================================================
-   41. 한 / 영
+   41. 한 / 영 전환
 ========================================================= */
 
 function renderLanguage() {
@@ -3385,11 +3347,64 @@ function renderLanguage() {
         state.language;
 
 
-    document.title =
-        state.language === "ko"
-            ? "볼만한픽 | Pick to Watch"
-            : "Pick to Watch | 볼만한픽";
+    /* SEO */
 
+    document.title =
+        text.pageTitle;
+
+
+    const metaDescription =
+        document.getElementById(
+            "metaDescription"
+        );
+
+
+    if (
+        metaDescription
+    ) {
+
+        metaDescription.setAttribute(
+            "content",
+            text.metaDescription
+        );
+    }
+
+
+    const ogTitle =
+        document.getElementById(
+            "ogTitle"
+        );
+
+
+    if (
+        ogTitle
+    ) {
+
+        ogTitle.setAttribute(
+            "content",
+            text.pageTitle
+        );
+    }
+
+
+    const ogDescription =
+        document.getElementById(
+            "ogDescription"
+        );
+
+
+    if (
+        ogDescription
+    ) {
+
+        ogDescription.setAttribute(
+            "content",
+            text.ogDescription
+        );
+    }
+
+
+    /* Header */
 
     languageButton.textContent =
         text.languageButton;
@@ -3411,6 +3426,8 @@ function renderLanguage() {
         text.siteSubtitle;
 
 
+    /* Filters */
+
     document
         .getElementById(
             "mediaTypeTitle"
@@ -3425,6 +3442,21 @@ function renderLanguage() {
         )
         .textContent =
         text.ottTitle;
+
+
+    const ottHint =
+        document.getElementById(
+            "ottHint"
+        );
+
+
+    if (
+        ottHint
+    ) {
+
+        ottHint.textContent =
+            text.ottHint;
+    }
 
 
     document
@@ -3494,6 +3526,8 @@ function renderLanguage() {
     pickButton.textContent =
         text.pick;
 
+
+    /* Results */
 
     document
         .getElementById(
@@ -3565,6 +3599,8 @@ function renderLanguage() {
         text.reroll;
 
 
+    /* Refine */
+
     document
         .getElementById(
             "refineTitle"
@@ -3585,12 +3621,36 @@ function renderLanguage() {
         text.refinePick;
 
 
-    document
-        .getElementById(
-            "sourceText"
-        )
-        .textContent =
-        text.sourceText;
+    /* Footer */
+
+    const sourceTmdb =
+        document.getElementById(
+            "sourceTmdb"
+        );
+
+
+    if (
+        sourceTmdb
+    ) {
+
+        sourceTmdb.textContent =
+            text.sourceTmdb;
+    }
+
+
+    const sourceOtt =
+        document.getElementById(
+            "sourceOtt"
+        );
+
+
+    if (
+        sourceOtt
+    ) {
+
+        sourceOtt.textContent =
+            text.sourceOtt;
+    }
 
 
     document
@@ -3608,6 +3668,8 @@ function renderLanguage() {
         .textContent =
         text.support;
 
+
+    /* Dynamic UI */
 
     renderMediaTypes();
     renderOttFilters();
@@ -3661,9 +3723,10 @@ function setupLanguageButton() {
 
 
             /*
-               TMDB 제목/overview도 언어별로 받아야 하므로
-               결과가 이미 있었다면 같은 조건으로 다시 요청.
+               TMDB 제목/overview도 언어별로 다르므로
+               결과가 이미 있었다면 같은 조건으로 다시 요청합니다.
             */
+
             if (
                 hadResults
             ) {
@@ -3697,11 +3760,13 @@ function setupPickButton() {
 
 
             resultsSection.scrollIntoView({
+
                 behavior:
                     "smooth",
 
                 block:
                     "start",
+
             });
         }
     );
@@ -3762,8 +3827,7 @@ function setupModal() {
         event => {
 
             if (
-                event.key ===
-                "Escape" &&
+                event.key === "Escape" &&
                 detailModal.classList.contains(
                     "open"
                 )
