@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>볼만한픽 | Pick to Watch</title>
+
+    <meta name="description" content="OTT, 장르, 제작 지역과 연도를 골라 지금 볼 작품을 빠르게 찾아보세요.">
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <main class="page">
+
+        <section class="glass-shell">
+
+            <button id="languageButton" class="language-button" type="button" aria-label="언어 변경">
+                EN
+            </button>
+
+
+            <header class="site-header">
+
+                <h1 id="siteTitle">
+                    볼만한픽
+                </h1>
+
+                <p id="siteSubtitle" class="site-subtitle">
+                    오늘 볼 작품을 빠르게 골라보세요.
+                </p>
+
+                <p class="developer">
+                    Developed by
+                    <a href="https://physxium.pages.dev/" target="_blank" rel="noopener noreferrer">
+                        Physxium (Han Gyeol Lee) ↗
+                    </a>
+                </p>
+
+            </header>
+
+
+            <section class="filter-panel">
+
+                <div class="filter-block">
+
+                    <div class="filter-heading-row">
+
+                        <div>
+                            <h2 id="mediaTypeTitle" class="filter-title">
+                                뭘 볼까요?
+                            </h2>
+                        </div>
+
+                        <div class="completion-badge complete" id="mediaTypeCheck" aria-hidden="true">
+                            ✓
+                        </div>
+
+                    </div>
+
+                    <div class="choice-row" id="mediaTypeFilters">
+
+                        <button class="choice-button active" type="button" data-media-type="movie">
+                            영화
+                        </button>
+
+                        <button class="choice-button" type="button" data-media-type="series">
+                            시리즈
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="filter-block">
+
+                    <div class="filter-heading-row">
+
+                        <div>
+                            <h2 id="ottTitle" class="filter-title">
+                                어디서 볼까요?
+                            </h2>
+                        </div>
+
+                        <div class="completion-badge complete" id="ottCheck" aria-hidden="true">
+                            ✓
+                        </div>
+
+                    </div>
+
+                    <div class="choice-row" id="ottFilters"></div>
+
+                </div>
+
+
+                <div class="filter-block">
+
+                    <div class="filter-heading-row">
+
+                        <div>
+                            <h2 id="genreTitle" class="filter-title">
+                                어떤 장르가 좋나요?
+                            </h2>
+
+                            <p id="genreHint" class="filter-hint">
+                                여러 개를 선택할 수 있어요.
+                            </p>
+                        </div>
+
+                        <div class="completion-badge" id="genreCheck" aria-hidden="true">
+                            ✓
+                        </div>
+
+                    </div>
+
+                    <div class="choice-row" id="genreFilters"></div>
+
+                    <div class="genre-mode-wrap hidden" id="genreModeWrap">
+
+                        <span id="genreModeLabel" class="small-label">
+                            여러 장르를 선택했어요
+                        </span>
+
+                        <div class="segmented-control">
+
+                            <button class="segment-button active" type="button" data-genre-mode="any">
+                                하나라도 포함
+                            </button>
+
+                            <button class="segment-button" type="button" data-genre-mode="all">
+                                모두 포함
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="filter-block">
+
+                    <div class="filter-heading-row">
+
+                        <div>
+                            <h2 id="regionTitle" class="filter-title">
+                                어디서 만든 작품을 볼까요?
+                            </h2>
+
+                            <p id="regionHint" class="filter-hint">
+                                여러 지역을 선택할 수 있어요.
+                            </p>
+                        </div>
+
+                        <div class="completion-badge" id="regionCheck" aria-hidden="true">
+                            ✓
+                        </div>
+
+                    </div>
+
+                    <div class="choice-row" id="regionFilters"></div>
+
+                </div>
+
+
+                <div class="filter-block">
+
+                    <div class="filter-heading-row">
+
+                        <div>
+                            <h2 id="yearTitle" class="filter-title">
+                                연도도 골라볼까요?
+                            </h2>
+                        </div>
+
+                        <div class="completion-badge" id="yearCheck" aria-hidden="true">
+                            ✓
+                        </div>
+
+                    </div>
+
+                    <div class="choice-row" id="yearFilters"></div>
+
+                </div>
+
+
+                <button id="pickButton" class="pick-button" type="button" disabled>
+                    PICK
+                </button>
+
+            </section>
+
+
+            <section id="resultsSection" class="results-section hidden">
+
+                <div class="results-intro">
+
+                    <h2 id="resultsTitle" class="section-main-title">
+                        오늘의 픽
+                    </h2>
+
+                    <p id="clickHint" class="section-subtext">
+                        작품 카드를 누르면 상세 정보를 확인할 수 있어요.
+                    </p>
+
+                </div>
+
+
+                <section class="result-group">
+
+                    <div class="result-heading">
+
+                        <div>
+                            <h3 id="topRatedTitle">
+                                평가 Top 5
+                            </h3>
+
+                            <p id="topRatedDescription">
+                                평가가 좋은 작품부터 골랐어요.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div id="topRatedGrid" class="poster-grid"></div>
+
+                </section>
+
+
+                <section class="result-group">
+
+                    <div class="result-heading">
+
+                        <div>
+                            <h3 id="luckyTitle">
+                                행운의 발견
+                            </h3>
+
+                            <p id="luckyDescription">
+                                평가 Top 5에는 들지 못했지만 충분히 좋은 작품 중 골랐어요.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div id="luckyGrid" class="poster-grid"></div>
+
+                    <div class="reroll-wrap">
+
+                        <button id="rerollButton" class="secondary-button" type="button">
+                            재추첨
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <section class="result-group">
+
+                    <div class="result-heading">
+
+                        <div>
+                            <h3 id="recentTitle">
+                                최신 작품
+                            </h3>
+
+                            <p id="recentDescription">
+                                최근에 나온 작품부터 보여드려요.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div id="recentGrid" class="poster-grid"></div>
+
+                </section>
+
+
+                <section class="refine-panel">
+
+                    <h3 id="refineTitle" class="refine-title">
+                        시간이 부족하다면 결과를 더 좁혀보세요.
+                    </h3>
+
+                    <p id="refineDescription" class="section-subtext">
+                        선택한 분량 기준으로 다시 추천해드려요.
+                    </p>
+
+                    <div id="refineFilters" class="choice-row refine-choices"></div>
+
+                    <button id="refineButton" class="secondary-button refine-button" type="button">
+                        다시 PICK
+                    </button>
+
+                </section>
+
+            </section>
+
+
+            <footer class="site-footer">
+
+                <p id="sourceText">
+                    영화·시리즈 정보는 TMDB 데이터를 기반으로 제공합니다.
+                </p>
+
+                <p>
+                    <a id="privacyLink" href="https://physxium.pages.dev/privacy" target="_blank"
+                        rel="noopener noreferrer">
+                        개인정보처리방침 / Privacy Policy
+                    </a>
+                </p>
+
+            </footer>
+
+        </section>
+
+    </main>
+
+
+    <div id="detailModal" class="modal-backdrop" aria-hidden="true">
+
+        <section class="detail-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+            <button id="modalClose" class="modal-close" type="button" aria-label="상세 정보 닫기">
+                ×
+            </button>
+
+            <div id="modalContent"></div>
+
+        </section>
+
+    </div>
+
+
+    <nav class="floating-bar" aria-label="Support">
+
+        <a id="supportLink" class="floating-link" href="https://ctee.kr/place/physxium" target="_blank"
+            rel="noopener noreferrer">
+            유용했다면 ☕ 커피 후원
+        </a>
+
+    </nav>
+
+
+    <script src="./app.js"></script>
+
+</body>
+
+</html>
