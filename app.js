@@ -1511,7 +1511,7 @@ async function callApi(payload) {
     } catch {
 
         throw new Error(
-            `TMDB ${response.status} | ${url.pathname}?${url.searchParams.toString()} | ${errorText}`
+            `HTTP ${response.status}`
         );
     }
 

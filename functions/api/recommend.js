@@ -445,7 +445,7 @@ async function tmdbGet(
 
 
         throw new Error(
-            `TMDB ${response.status}: ${errorText}`
+            `TMDB ${response.status} | ${url.pathname}?${url.searchParams.toString()} | ${errorText}`
         );
     }
 
