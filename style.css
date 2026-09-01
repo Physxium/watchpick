@@ -1540,37 +1540,67 @@ button {
 
 
 .floating-link {
-    display:
-        flex;
+    width: 100%;
+    text-align: center;
+    display: flex;
 
-    align-items:
-        center;
+    align-items: center;
 
-    justify-content:
-        center;
+    justify-content: center;
 
-    padding:
-        10px 12px;
+    padding: 10px 12px;
 
-    border-radius:
-        13px;
+    border: none;
+
+    border-radius: 13px;
 
     background:
         linear-gradient(135deg,
             rgba(255, 238, 216, 0.97),
             rgba(255, 247, 232, 0.94));
 
-    color:
-        #53463e;
+    color: #53463e;
 
-    font-size:
-        12px;
+    font-size: 12px;
 
-    font-weight:
-        680;
+    font-weight: 680;
 
-    text-decoration:
-        none;
+    font-family: inherit;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+#bmc-wbtn {
+    display: none !important;
+}
+
+.ctee-support {
+    position: fixed;
+
+    right: 18px;
+    bottom: 90px;
+
+    z-index: 9998;
+
+    padding: 8px 12px;
+
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.95);
+    color: #111;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+}
+
+.ctee-support:hover {
+    transform: translateY(-1px);
 }
 
 
@@ -1729,4 +1759,42 @@ body.modal-open {
             20px;
     }
 
+}
+
+@media (max-width: 600px) {
+
+    #bmc-iframe {
+        position: fixed !important;
+
+        top: 10px !important;
+        bottom: auto !important;
+
+        left: 10px !important;
+        right: auto !important;
+
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+
+        height: calc(100dvh - 120px) !important;
+        max-height: calc(100dvh - 120px) !important;
+
+        border-radius: 16px !important;
+    }
+
+    .ctee-support {
+        left: 50%;
+        right: auto;
+
+        bottom: 70px;
+
+        transform: translateX(-50%);
+
+        z-index: 1000001;
+
+        white-space: nowrap;
+    }
+
+    .ctee-support:hover {
+        transform: translateX(-50%) translateY(-1px);
+    }
 }
